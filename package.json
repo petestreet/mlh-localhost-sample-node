@@ -1,0 +1,14 @@
+{
+  "name": "MLH Localhost Tweet Scraper - Node",
+  "version": "0.0.1",
+  "description": "Node.js backend app for querying the Twitter API",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Alex Peterson",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.16.3"
+  }
+}
