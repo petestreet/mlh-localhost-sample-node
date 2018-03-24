@@ -1,5 +1,6 @@
 require('dotenv').config();
 var axios = require('axios');
+var querystring = require('querystring');
 
 // Since btoa() isn't automatically included in Node, recreate it here.
 // Source: https://github.com/node-browser-compat/btoa/blob/master/index.js
@@ -75,9 +76,26 @@ module.exports = {
     }.bind(this));
   },
   buildTwitterQuery: function(options) {
-    // TODO: allow for additional search terms in the options object.
+    // NOTE: make sure these queries are URL-encoded
+    var queries = [
+      'mlhlocalhost',         // mlhlocalhost
+      '%23mlhlocalhost'       // #mlhlocalhost
+    ];
 
-    return '?q=mlh%20localhost&src=typd';
+    // TODO: allow for additional search terms in the options object.
+    if (options && options.additionalQueries) {
+      options.additionalQueries.forEach(function(query) {
+        queries.push(querystring.escape(query));
+      });
+    }
+
+    var result = queries.reduce(function(acc, query, idx) {
+      return idx === queries.length - 1 ?
+        acc + query :
+        acc + query + '%20OR%20';
+    }, '');
+
+    return '?q=' + result;
   },
   searchTwitter: function(query, options) {
     var self = this;
@@ -85,8 +103,8 @@ module.exports = {
       .then(function(token) {
 
         if (!query) {
-          // A query that we pass in via the client app takes precedence
-          // over the default query that we build.
+          // A search query that we pass in via the client app takes
+          // precedence over the default query that we build.
           query = self.buildTwitterQuery(options);
         }
 
