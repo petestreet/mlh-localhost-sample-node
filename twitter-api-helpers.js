@@ -75,14 +75,24 @@ module.exports = {
     }.bind(this));
   },
   buildTwitterQuery: function(options) {
-    // TODO...
+    // TODO: allow for additional search terms in the options object.
+
+    return '?q=mlh%20localhost&src=typd';
   },
-  searchTwitter: function(query) {
+  searchTwitter: function(query, options) {
+    var self = this;
     return this.getBearerToken()
       .then(function(token) {
+
+        if (!query) {
+          // A query that we pass in via the client app takes precedence
+          // over the default query that we build.
+          query = self.buildTwitterQuery(options);
+        }
+
         return axios({
           method: 'get',
-          url: 'https://api.twitter.com/1.1/search/tweets.json?q=' + query,
+          url: 'https://api.twitter.com/1.1/search/tweets.json' + query,
           headers: {
             'Authorization': 'Bearer ' + token
           }

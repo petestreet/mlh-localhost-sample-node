@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const app = express();
 
 // Basic rate limiting.
@@ -15,12 +16,24 @@ var limiter = new RateLimit({
 app.use(limiter);
 
 
+// Configure CORS
+// Docs: https://github.com/expressjs/cors
+var whitelist = ['http://localhost:63342'];
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true);
+    } else {
+      callback(new Error('Not allowed by CORS'));
+    }
+  }
+};
+
+
 // Catch-all security package for Express.
 var helmet = require('helmet');
 app.use(helmet());
 
-
-// TODO: CORS
 
 
 // App secrets are stored in the .env file
@@ -42,8 +55,8 @@ app.get('/', function(req, res) {
   res.send('Hello World!')
 });
 
-app.get('/tweets', function(req, res) {
-  twitterHelpers.searchTwitter('nasa&result_type=popular')
+app.get('/tweets', cors(corsOptions), function(req, res) {
+  twitterHelpers.searchTwitter(req.query.searchQuery)
     .then(function(response) {
       res.json(response);
     })
@@ -52,6 +65,6 @@ app.get('/tweets', function(req, res) {
     });
 });
 
-app.listen(3000, function() {
-  console.log('Example app listening on port 3000!')
+app.listen(3001, function() {
+  console.log('Listening on localhost:3001')
 });
