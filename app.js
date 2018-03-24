@@ -3,7 +3,7 @@ const cors = require('cors');
 const app = express();
 
 // Basic rate limiting.
-// See the docs here: https://www.npmjs.com/package/express-rate-limit
+// Docs here: https://www.npmjs.com/package/express-rate-limit
 var RateLimit = require('express-rate-limit');
 app.enable('trust proxy');  // this server is hosted on a reverse proxy (Heroku)
 
@@ -51,7 +51,7 @@ require('dotenv').config();
 *
 */
 
-var twitterHelpers = require('./twitter-api-helpers.js');
+var twitterHelpers = require('./js/twitter-api-helpers');
 
 
 app.get('/', function(req, res) {

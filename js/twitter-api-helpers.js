@@ -1,20 +1,6 @@
 require('dotenv').config();
 var axios = require('axios');
-var querystring = require('querystring');
-
-// Since btoa() isn't automatically included in Node, recreate it here.
-// Source: https://github.com/node-browser-compat/btoa/blob/master/index.js
-var btoa = function(str) {
-  var buffer;
-
-  if (str instanceof Buffer) {
-    buffer = str;
-  } else {
-    buffer = new Buffer(str.toString(), 'binary');
-  }
-
-  return buffer.toString('base64');
-};
+var appHelpers = require('./app-helpers');
 
 /*
  *
@@ -34,16 +20,21 @@ module.exports = {
   tokenCredentials: null,
   bearerToken: null,
   getTokenCredentials: function() {
-    this.tokenCredentials = btoa(process.env.TWITTER_CONSUMER_KEY + ':' + process.env.TWITTER_CONSUMER_SECRET);
+    this.tokenCredentials =
+      appHelpers.btoa(process.env.TWITTER_CONSUMER_KEY + ':' + process.env.TWITTER_CONSUMER_SECRET);
+
     return this.tokenCredentials;
   },
   getBearerToken: function() {
     return new Promise(function(resolve, reject) {
       if (this.bearerToken) {
+
         // Don't re-query for our bearer token if we've already found it
         // and stored it in the server's memory.
         resolve(this.bearerToken);
+
       } else {
+
         if (!this.tokenCredentials) {
           this.getTokenCredentials();
         }
@@ -75,19 +66,12 @@ module.exports = {
       }
     }.bind(this));
   },
-  buildTwitterQuery: function(options) {
+  buildTwitterQuery: function() {
     // NOTE: make sure these queries are URL-encoded
     var queries = [
       'mlhlocalhost',         // mlhlocalhost
       '%23mlhlocalhost'       // #mlhlocalhost
     ];
-
-    // TODO: allow for additional search terms in the options object.
-    if (options && options.additionalQueries) {
-      options.additionalQueries.forEach(function(query) {
-        queries.push(querystring.escape(query));
-      });
-    }
 
     var result = queries.reduce(function(acc, query, idx) {
       return idx === queries.length - 1 ?
@@ -97,7 +81,7 @@ module.exports = {
 
     return '?q=' + result;
   },
-  searchTwitter: function(query, options) {
+  searchTwitter: function(query) {
     var self = this;
     return this.getBearerToken()
       .then(function(token) {
@@ -105,7 +89,7 @@ module.exports = {
         if (!query) {
           // A search query that we pass in via the client app takes
           // precedence over the default query that we build.
-          query = self.buildTwitterQuery(options);
+          query = self.buildTwitterQuery();
         }
 
         return axios({
