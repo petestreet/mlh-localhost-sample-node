@@ -20,7 +20,7 @@ app.use(limiter);
 // Docs: https://github.com/expressjs/cors
 var whitelist = [
   'http://localhost:63342',
-  'https://mlh-tweet-scraper.firebaseapp.com/'
+  'https://mlh-tweet-scraper.firebaseapp.com'
 ];
 var corsOptions = {
   origin: function (origin, callback) {
@@ -71,5 +71,5 @@ app.get('/tweets', cors(corsOptions), function(req, res) {
 const port = process.env.PORT || 3001;
 
 app.listen(port, function() {
-  console.log('Listening on localhost:3001')
+  console.log('Listening on ', port);
 });
