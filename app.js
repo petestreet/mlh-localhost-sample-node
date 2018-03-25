@@ -2,8 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+
 // Basic rate limiting.
-// Docs here: https://www.npmjs.com/package/express-rate-limit
+// Docs: https://www.npmjs.com/package/express-rate-limit
 var RateLimit = require('express-rate-limit');
 app.enable('trust proxy');  // this server is hosted on a reverse proxy (Heroku)
 
@@ -34,32 +35,31 @@ var corsOptions = {
 
 
 // Catch-all security package for Express.
+// Docs: https://expressjs.com/en/advanced/best-practice-security.html#use-helmet
 var helmet = require('helmet');
 app.use(helmet());
 
 
-
-// App secrets are stored in the .env file
+// App secrets are stored in the .env file.
 require('dotenv').config();
 
 
 /*
-*
-*
+ *
+ *
     All of our app logic goes below this section.
-*
-*
-*/
+ *
+ *
+ */
 
-var twitterHelpers = require('./js/twitter-api-helpers');
-
+var twitterApi = require('./js/twitter-api');
 
 app.get('/', function(req, res) {
   res.send('Hello World!')
 });
 
 app.get('/tweets', cors(corsOptions), function(req, res) {
-  twitterHelpers.searchTwitter(req.query.searchQuery)
+  twitterApi.searchTwitter(req.query.searchQuery)
     .then(function(response) {
       res.json(response);
     })
@@ -68,6 +68,7 @@ app.get('/tweets', cors(corsOptions), function(req, res) {
     });
 });
 
+// 3001 is our localhost port
 const port = process.env.PORT || 3001;
 
 app.listen(port, function() {

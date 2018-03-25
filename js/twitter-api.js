@@ -1,6 +1,6 @@
 require('dotenv').config();
 var axios = require('axios');
-var appHelpers = require('./app-helpers');
+var helpers = require('./helpers');
 
 /*
  *
@@ -21,7 +21,7 @@ module.exports = {
   bearerToken: null,
   getTokenCredentials: function() {
     this.tokenCredentials =
-      appHelpers.btoa(process.env.TWITTER_CONSUMER_KEY + ':' + process.env.TWITTER_CONSUMER_SECRET);
+      helpers.btoa(process.env.TWITTER_CONSUMER_KEY + ':' + process.env.TWITTER_CONSUMER_SECRET);
 
     return this.tokenCredentials;
   },
@@ -40,7 +40,7 @@ module.exports = {
         }
 
         // We're using Axios to make HTTP requests so that it's isomorphic
-        // to the client-side app.
+        // with the client-side app.
         var self = this;
         axios({
           method: 'post',
@@ -60,14 +60,16 @@ module.exports = {
             }
           })
           .catch(function (error) {
-            // Handle errors.
             reject(error);
           });
       }
     }.bind(this));
   },
   buildTwitterQuery: function() {
-    // NOTE: make sure these queries are URL-encoded
+    // Source on Twitter Search API:
+    // https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets
+
+    // Make sure these queries are URL-encoded
     var queries = [
       'mlhlocalhost',         // mlhlocalhost
       '%23mlhlocalhost'       // #mlhlocalhost
@@ -79,7 +81,7 @@ module.exports = {
         acc + query + '%20OR%20';
     }, '');
 
-    return '?q=' + result;
+    return result;
   },
   searchTwitter: function(query) {
     var self = this;
@@ -94,7 +96,7 @@ module.exports = {
 
         return axios({
           method: 'get',
-          url: 'https://api.twitter.com/1.1/search/tweets.json' + query,
+          url: 'https://api.twitter.com/1.1/search/tweets.json?q=' + query,
           headers: {
             'Authorization': 'Bearer ' + token
           }
@@ -104,12 +106,10 @@ module.exports = {
             return response.data;
           })
           .catch(function(error) {
-            // Handle errors
             return error;
           });
       })
       .catch(function(error) {
-        // Handle errors
         return error;
       });
   }
