@@ -40,6 +40,8 @@ By default, this will run on [localhost:3001](http://localhost:3001), so open th
 
 I've set up some basic [CORS](https://developer.mozilla.org/en-US/docs/Web/HTTP/CORS) rules at the top of `app.js`, which means you'll only be able to access the `/tweets` endpoint via an approved host. Feel free to change the hosts in the `localWhitelist` array to match the localhost port that your local frontend app is running on.
 
+For more information on the sample frontend app, check out its [git repository](https://github.com/petestreet/mlh-localhost-sample-frontend).
+
 ### Twitter API Authorization
 
 The most complicated part of this app is in the Twitter API helper functions. We first send our application credentials to Twitter's `oauth2/token` endpoint and receive a bearer token back. 
