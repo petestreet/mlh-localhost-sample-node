@@ -91,12 +91,12 @@ module.exports = {
         if (!query) {
           // A search query that we pass in via the client app takes
           // precedence over the default query that we build.
-          query = self.buildTwitterQuery();
+          query = '?q=' + self.buildTwitterQuery();
         }
 
         return axios({
           method: 'get',
-          url: 'https://api.twitter.com/1.1/search/tweets.json?q=' + query,
+          url: 'https://api.twitter.com/1.1/search/tweets.json' + query + '&count=10',
           headers: {
             'Authorization': 'Bearer ' + token
           }
