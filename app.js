@@ -20,9 +20,19 @@ app.use(limiter);
 // Configure CORS
 // Docs: https://github.com/expressjs/cors
 var whitelist = [
-  'http://localhost:63342',
   'https://mlh-tweet-scraper.firebaseapp.com'
 ];
+
+var localWhitelist = [
+  'http://localhost:3000'
+];
+
+if (!process.env.PORT) {
+  localWhitelist.forEach(function(url) {
+    whitelist.push(url);
+  });
+}
+
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
